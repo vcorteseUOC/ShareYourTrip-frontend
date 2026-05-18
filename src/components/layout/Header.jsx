@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import UserAvatar from '../common/UserAvatar'
 import logo from '../../assets/logo.png'
 
 const Header = ({ scrollY }) => {
@@ -54,17 +55,11 @@ const Header = ({ scrollY }) => {
                     Mi Dashboard
                   </Link>
                   <div className="d-flex align-items-center gap-3">
-                    <div 
-                      className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
-                      style={{ 
-                        width: '40px', 
-                        height: '40px', 
-                        backgroundColor: 'rgba(255,255,255,0.2)',
-                        fontSize: '0.9rem'
-                      }}
-                    >
-                      {user?.firstName?.charAt(0) || 'U'}
-                    </div>
+                    <UserAvatar
+                      photoUrl={user?.profilePhotoUrl}
+                      name={user?.firstName || 'Usuario'}
+                      size={40}
+                    />
                     <button
                       onClick={handleLogout}
                       className="text-decoration-none text-white fw-medium bg-transparent border-0"

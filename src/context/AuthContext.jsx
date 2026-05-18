@@ -9,8 +9,12 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = authService.getToken()
-    if (token) {
-      // Aquí podrías validar el token o obtener el usuario
+    const userData = localStorage.getItem('userData')
+    if (token && userData) {
+      // Recuperar usuario completo desde localStorage
+      setUser(JSON.parse(userData))
+    } else if (token) {
+      // Si hay token pero no userData, guardar solo el token temporalmente
       setUser({ token })
     }
     setLoading(false)
@@ -19,16 +23,24 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const userData = await authService.login(email, password)
     setUser(userData)
+    localStorage.setItem('userData', JSON.stringify(userData))
     return userData
+  }
+
+  const updateUser = (updatedFields) => {
+    const updated = { ...user, ...updatedFields }
+    setUser(updated)
+    localStorage.setItem('userData', JSON.stringify(updated))
   }
 
   const logout = () => {
     authService.logout()
+    localStorage.removeItem('userData')
     setUser(null)
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, loading, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   )

@@ -1,75 +1,31 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import Header from '../components/layout/Header'
 import HeroSection from '../components/layout/HeroSection'
-import barcelona from '../assets/barcelona.jpg'
-import madrid from '../assets/madrid.jpg'
-import valencia from '../assets/valencia.jpg'
-import sevilla from '../assets/sevilla.jpg'
+import Footer from '../components/layout/Footer'
+import LoadingScreen from '../components/common/LoadingScreen'
+import SearchBarIndex from '../components/layout/SearchBarIndex'
+import PopularDestinations from '../components/layout/PopularDestinations'
+import { useIndex } from '../hooks/useIndex'
 
 const Index = () => {
-  const [scrollY, setScrollY] = useState(0)
-  const [statsVisible, setStatsVisible] = useState(false)
-  const [ctaVisible, setCtaVisible] = useState(false)
-  const statsRef = useRef(null)
-  const ctaRef = useRef(null)
+  const {
+    scrollY,
+    statsVisible,
+    ctaVisible,
+    searchParams,
+    loading,
+    statsRef,
+    ctaRef,
+    heroOpacity,
+    handleSearch,
+    handleInputChange,
+    handleDestinationClick
+  } = useIndex()
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY)
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setStatsVisible(true)
-          }
-        })
-      },
-      { threshold: 0.3 }
-    )
-
-    if (statsRef.current) {
-      observer.observe(statsRef.current)
-    }
-
-    return () => {
-      if (statsRef.current) {
-        observer.unobserve(statsRef.current)
-      }
-    }
-  }, [])
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setCtaVisible(true)
-          }
-        })
-      },
-      { threshold: 0.3 }
-    )
-
-    if (ctaRef.current) {
-      observer.observe(ctaRef.current)
-    }
-
-    return () => {
-      if (ctaRef.current) {
-        observer.unobserve(ctaRef.current)
-      }
-    }
-  }, [])
-
-  const heroOpacity = Math.max(0, 1 - scrollY / 400)
+  if (loading) {
+    return <LoadingScreen message="Buscando alojamientos..." />
+  }
 
   return (
     <div className="min-vh-100 bg-light">
@@ -86,144 +42,15 @@ const Index = () => {
       {/* Features Section */}
       <main className="container py-5">
         {/* Search Bar */}
-        <div className="card shadow-lg border-0" style={{ marginTop: '-80px', position: 'relative', zIndex: 10 }}>
-          <div className="card-body p-0">
-            <div className="row g-0 align-items-center">
-              <div className="col-md-3">
-                <div className="p-4 border-end">
-                  <label className="form-label small text-muted mb-1">Destino</label>
-                  <div className="d-flex align-items-center">
-                    <i className="bi bi-geo-alt me-2 text-muted"></i>
-                    <input 
-                      type="text" 
-                      className="form-control border-0 p-0 fw-medium" 
-                      placeholder="¿A dónde vas?"
-                      style={{ backgroundColor: 'transparent' }}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3">
-                <div className="p-4 border-end">
-                  <label className="form-label small text-muted mb-1">Check-in</label>
-                  <div className="d-flex align-items-center">
-                    <i className="bi bi-calendar me-2 text-muted"></i>
-                    <input 
-                      type="date" 
-                      className="form-control border-0 p-0 fw-medium"
-                      style={{ backgroundColor: 'transparent' }}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-3">
-                <div className="p-4 border-end">
-                  <label className="form-label small text-muted mb-1">Check-out</label>
-                  <div className="d-flex align-items-center">
-                    <i className="bi bi-calendar me-2 text-muted"></i>
-                    <input 
-                      type="date" 
-                      className="form-control border-0 p-0 fw-medium"
-                      style={{ backgroundColor: 'transparent' }}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-2">
-                <div className="p-4 border-end">
-                  <label className="form-label small text-muted mb-1">Huéspedes</label>
-                  <div className="d-flex align-items-center">
-                    <i className="bi bi-people me-2 text-muted"></i>
-                    <select className="form-select border-0 p-0 fw-medium" style={{ backgroundColor: 'transparent' }}>
-                      <option value="1">1 huésped</option>
-                      <option value="2">2 huéspedes</option>
-                      <option value="3">3 huéspedes</option>
-                      <option value="4">4 huéspedes</option>
-                      <option value="5+">5+ huéspedes</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-1">
-                <div className="p-4">
-                  <button type="submit" className="btn btn-lg w-100 border-0" style={{ backgroundColor: 'white' }}>
-                    <i className="bi bi-search color-shareyourtrip" style={{ fontSize: '1.5rem' }}></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-         {/* Popular Destinations */}
-        <div className="mb-5" style={{ marginTop: '3rem' }}>
-          <h2 className="h3 fw-bold text-center mb-4">Destinos más populares</h2>
-          <div className="row g-4">
-            <div className="col-md-3 col-sm-6">
-              <div className="card border-0 shadow h-100">
-                <div className="position-relative" style={{ 
-                  height: '200px', 
-                  backgroundImage: `url(${barcelona})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat'
-                }}>
-                  <div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <h5 className="text-white mb-0">Barcelona</h5>
-                    <p className="text-white small mb-0">España</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3 col-sm-6">
-              <div className="card border-0 shadow h-100">
-                <div className="position-relative" style={{ 
-                  height: '200px', 
-                  backgroundImage: `url(${madrid})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat'
-                }}>
-                  <div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <h5 className="text-white mb-0">Madrid</h5>
-                    <p className="text-white small mb-0">España</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3 col-sm-6">
-              <div className="card border-0 shadow h-100">
-                <div className="position-relative" style={{ 
-                  height: '200px', 
-                  backgroundImage: `url(${valencia})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat'
-                }}>
-                  <div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <h5 className="text-white mb-0">Valencia</h5>
-                    <p className="text-white small mb-0">España</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3 col-sm-6">
-              <div className="card border-0 shadow h-100">
-                <div className="position-relative" style={{ 
-                  height: '200px', 
-                  backgroundImage: `url(${sevilla})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat'
-                }}>
-                  <div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <h5 className="text-white mb-0">Sevilla</h5>
-                    <p className="text-white small mb-0">España</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SearchBarIndex 
+          searchParams={searchParams}
+          handleSearch={handleSearch}
+          handleInputChange={handleInputChange}
+        />
+        {/* Popular Destinations */}
+        <PopularDestinations 
+          handleDestinationClick={handleDestinationClick}
+        />
 
         {/* What is ShareYourTrip */}
         <div className="mb-5" style={{ animation: 'fadeIn 1s ease-in' }}>
@@ -287,12 +114,7 @@ const Index = () => {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-dark text-white py-4 mt-5">
-        <div className="container text-center">
-          <p className="mb-0">© 2026 ShareYourTrip. TFG Victor Cortés Esteve - UOC - Ingenieria informática</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
